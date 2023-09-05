@@ -12,9 +12,9 @@
             var tables1 = document.getElementById('tables1');
             tables1.style.display = "block";
             tables1.innerHTML = "<h2>...</h2>";
-
+            params = "?only_warn="+document.getElementById('only_warn').value;
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', `do_analyze_data`);
+            xhr.open('GET', `do_analyze_data`+params);
             xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xhr.onreadystatechange = function () {
                 if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
@@ -43,9 +43,17 @@
 
 </head>
 
+<datalist id="bool">
+    <option value="是"></option>
+    <option value="否"></option>
+</datalist>
+
 <body>
+<img src="temperature.png">
     <div>
         <button id="run" onclick="refresh(1)">分析</button>
+        <label for="only_warn">只看报警</label>
+        <input id="only_warn" type="text" list="bool">
         <br>
         <div id="tables1" style="margin:0;width:800px;text-align:left;">
         </div>

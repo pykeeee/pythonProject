@@ -25,7 +25,8 @@ def analyze_data():
 @app.route('/do_analyze_data', methods=["GET"])
 def do_analyze_data():
     params = request.args
-    return generate_table()
+    print(params)
+    return generate_table(params.get('only_warn','否'))
 
 @app.route('/champion_pool_analyze', methods=["POST"])
 def champion_pool_analyze():
