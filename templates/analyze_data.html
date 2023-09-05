@@ -49,15 +49,15 @@
 </datalist>
 
 <body>
-<img src="temperature.png">
     <div>
         <button id="run" onclick="refresh(1)">分析</button>
         <label for="only_warn">只看报警</label>
-        <input id="only_warn" type="text" list="bool">
+        <input id="only_warn" type="text" list="bool" value="是">
         <br>
         <div id="tables1" style="margin:0;width:800px;text-align:left;">
         </div>
         <br>
+        <a href="http://localhost:5050/pic">查看折线图</a>
     </div>
 </body>
 <style>

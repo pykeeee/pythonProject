@@ -1,3 +1,4 @@
+import os
 from collections import defaultdict
 from datetime import datetime
 import matplotlib.pyplot as plt
@@ -5,7 +6,7 @@ import pandas
 import requests
 from flask import json
 from matplotlib.font_manager import FontProperties
-
+import shutil
 
 def url():
     return 'http://123.139.89.242:60000/api/rxframes'
@@ -29,6 +30,16 @@ def parse_time(time_str):
 
 
 def generate_table(only_warn='否'):
+    folder_path = './static/images'
+
+    for file_name in os.listdir(folder_path):
+        if file_name.endswith('.png'):
+            file_path = os.path.join(folder_path, file_name)
+            try:
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+            except Exception as e:
+                print(e)
     print(only_warn)
     headers = {
         'Authorization': 'Digest username="admin", realm="lorawan-server", nonce="1926482c41e2ef6920550754dd337b9d", uri="/api/rxframes?_page=1&_perPage=30&_sortDir=DESC&_sortField=datetime", response="49f64634dce3c378e78113455f32ecb4"'
@@ -53,6 +64,8 @@ def generate_table(only_warn='否'):
     result = []
     for key in grouped_data:
         try:
+            list_data=grouped_data.get(key)
+            draw(list_data)
             item = grouped_data.get(key)[0]
             data = item['data']
             last_eight = data[-8:]
@@ -74,16 +87,13 @@ def generate_table(only_warn='否'):
 
     return pandas.DataFrame(result, columns=['devaddr', '时间', '温度', '湿度', '是否报警']).to_html()
 
-def draw():
+def draw(list_data):
     # 假设数据在这个列表中
+    list_data.sort(key=lambda x: x['datetime'], reverse=False)
     data = [
-        {'时间': '2021-01-01', '温度': 10},
-        {'时间': '2021-01-02', '温度': 11},
-        {'时间': '2021-01-03', '温度': 12},
-        {'时间': '2021-01-04', '温度': 13},
-        {'时间': '2021-01-05', '温度': 12},
     ]
-
+    for item in list_data:
+        data.append({'时间': str(item['datetime']), '温度': item['data']})
     # 将时间和温度分别保存到两个列表中
     time_list = [d['时间'] for d in data]
     temperature_list = [d['温度'] for d in data]
@@ -91,11 +101,11 @@ def draw():
     # 画图
     fig, ax = plt.subplots()
     ax.plot(time_list, temperature_list)
-    ax.set(xlabel='datetime', ylabel='温度', title='温度变化折线图')
+    ax.set(xlabel='datetime', ylabel='temperature', title='Temperature change line chart')
     ax.grid()
 
     # 将绘制的图形保存到文件中
-    fig.savefig("temperature.png")
+    fig.savefig("./static/images/temperature1"+list_data[0]['devaddr']+".png")
 
 if __name__ == "__main__":
     draw()
